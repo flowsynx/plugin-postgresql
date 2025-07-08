@@ -1,0 +1,102 @@
+name: Release plugin
+
+on:
+  workflow_dispatch:
+    inputs:
+      rel_version:
+        description: 'Release version (examples: 1.9.0-rc.1, 1.9.1)'
+        required: true
+        type: string
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  ARTIFACT_DIR: ./release
+  PUBLISH_DIR: ${{ github.workspace }}/publish
+  DIST_DIR: ${{ github.workspace }}/dist
+  DOWNLOAD_DIR: ./downloaded-artifacts
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3.2.0
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --configuration Release /p:Version='${{ inputs.rel_version }}' --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release /p:Version='${{ inputs.rel_version }}' --no-build
+
+      - name: Publish project
+        run: dotnet publish src/FlowSynx.Plugins.PostgreSql.csproj -c Release -o "${{ env.PUBLISH_DIR }}"
+
+      - name: Package release artifacts
+        run: |
+          mkdir -p "${{ env.DIST_DIR }}"
+          cd "${{ env.PUBLISH_DIR }}"
+          7z a -tzip "${{ env.DIST_DIR }}/flowsynx.postgresql.${{ inputs.rel_version }}.zip" *
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: uploaded-artifacts
+          path: ${{ env.DIST_DIR }}
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: uploaded-artifacts
+          path: ${{ env.DOWNLOAD_DIR }}
+
+      - name: Generate SHA256 checksums
+        run: |
+          cd "${{ env.DOWNLOAD_DIR }}"
+          for file in *; do sha256sum -b "$file" > "$file.sha256"; done
+          cd -
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ inputs.rel_version }}
+          name: PostgreSql Plugin v${{ inputs.rel_version }}
+          artifacts: "${{ env.DOWNLOAD_DIR }}/**/*.*"
+          body: |
+            This is the v${{ inputs.rel_version }} release of the PostgreSql plugin for FlowSynx System.
+          token: ${{ secrets.GH_TOKEN }}
+
+  create-branch:
+    runs-on: ubuntu-latest
+    needs: [build, release]
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Create release branch
+        uses: peterjgrainger/action-create-branch@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          branch: release-${{ inputs.rel_version }}
+          sha: ${{ github.sha }}
