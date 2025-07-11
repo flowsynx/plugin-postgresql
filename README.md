@@ -1,6 +1,6 @@
 # FlowSynx PostgreSQL Plugin
 
-The PostgreSQL Plugin is a pre-packaged, plug-and-play integration component for the FlowSynx engine. It enables executing PostgreSQL queries with configurable parameters such as connection strings, SQL templates, and runtime parameters. Designed for FlowSynx’s no-code/low-code automation workflows, this plugin simplifies database integration, data retrieval, and transformation tasks.
+The PostgreSQL Plugin is a pre-packaged, plug-and-play integration component for the FlowSynx engine. It enables executing PostgreSQL queries with configurable parameters such as connection strings, SQL templates, and runtime parameters. Designed for FlowSynxâ€™s no-code/low-code automation workflows, this plugin simplifies database integration, data retrieval, and transformation tasks.
 
 This plugin is automatically installed by the FlowSynx engine when selected within the platform. It is not intended for manual installation or standalone developer use outside the FlowSynx environment.
 
@@ -75,4 +75,4 @@ The plugin accepts the following parameters:
 
 ## License
 
-© FlowSynx. All rights reserved.
+Â© FlowSynx. All rights reserved.
