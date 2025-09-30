@@ -29,7 +29,7 @@ public class PostgreSqlPlugin: IPlugin
         Name = "PostgreSql",
         CompanyName = "FlowSynx",
         Description = Resources.PluginDescription,
-        Version = new Version(1, 1, 0),
+        Version = new Version(1, 1, 1),
         Category = PluginCategory.Database,
         Authors = new List<string> { "FlowSynx" },
         Copyright = "© FlowSynx. All rights reserved.",
