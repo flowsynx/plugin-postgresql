@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowSynx.Plugins.PostgreSql
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B7D5764D-D2D8-422E-B52C-7A65C40B3776}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowSynx.Plugins.PostgreSql.UnitTests", "tests\FlowSynx.Plugins.PostgreSql.UnitTests.csproj", "{82C8359D-256F-44D8-8A03-1BDF83489F91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,11 +21,19 @@ Global
 		{2502E381-8D23-4AE3-B933-C7C02AF2058D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2502E381-8D23-4AE3-B933-C7C02AF2058D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2502E381-8D23-4AE3-B933-C7C02AF2058D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82C8359D-256F-44D8-8A03-1BDF83489F91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82C8359D-256F-44D8-8A03-1BDF83489F91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82C8359D-256F-44D8-8A03-1BDF83489F91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82C8359D-256F-44D8-8A03-1BDF83489F91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2502E381-8D23-4AE3-B933-C7C02AF2058D} = {B7D5764D-D2D8-422E-B52C-7A65C40B3776}
+		{82C8359D-256F-44D8-8A03-1BDF83489F91} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D864F8D6-89F7-44B5-80D3-2AA7CF673C2E}
 	EndGlobalSection
 EndGlobal

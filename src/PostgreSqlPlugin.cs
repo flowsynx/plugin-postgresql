@@ -1,7 +1,8 @@
-﻿using FlowSynx.PluginCore.Helpers;
-using FlowSynx.PluginCore;
+﻿using FlowSynx.PluginCore;
 using FlowSynx.PluginCore.Extensions;
+using FlowSynx.PluginCore.Helpers;
 using FlowSynx.Plugins.PostgreSql.Models;
+using FlowSynx.Plugins.PostgreSql.Services;
 using Npgsql;
 using NpgsqlTypes;
 
@@ -10,8 +11,17 @@ namespace FlowSynx.Plugins.PostgreSql;
 public class PostgreSqlPlugin: IPlugin
 {
     private IPluginLogger? _logger;
+    private readonly IReflectionGuard _reflectionGuard;
     private PostgreSqlPluginSpecifications _postgreSqlSpecifications = null!;
     private bool _isInitialized;
+
+    public PostgreSqlPlugin()
+        : this(new DefaultReflectionGuard()) { }
+
+    internal PostgreSqlPlugin(IReflectionGuard reflectionGuard)
+    {
+        _reflectionGuard = reflectionGuard ?? throw new ArgumentNullException(nameof(reflectionGuard));
+    }
 
     public PluginMetadata Metadata => new PluginMetadata
     {
@@ -45,9 +55,7 @@ public class PostgreSqlPlugin: IPlugin
 
     public Task Initialize(IPluginLogger logger)
     {
-        if (ReflectionHelper.IsCalledViaReflection())
-            throw new InvalidOperationException(Resources.ReflectionBasedAccessIsNotAllowed);
-
+        ThrowIfReflection();
         ArgumentNullException.ThrowIfNull(logger);
         _postgreSqlSpecifications = Specifications.ToObject<PostgreSqlPluginSpecifications>();
         _logger = logger;
@@ -58,12 +66,8 @@ public class PostgreSqlPlugin: IPlugin
     public async Task<object?> ExecuteAsync(PluginParameters parameters, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-
-        if (ReflectionHelper.IsCalledViaReflection())
-            throw new InvalidOperationException(Resources.ReflectionBasedAccessIsNotAllowed);
-
-        if (!_isInitialized)
-            throw new InvalidOperationException($"Plugin '{Metadata.Name}' v{Metadata.Version} is not initialized.");
+        ThrowIfReflection();
+        ThrowIfNotInitialized();
 
         var inputParameter = parameters.ToObject<InputParameter>();
         var operation = inputParameter.Operation;
@@ -74,6 +78,18 @@ public class PostgreSqlPlugin: IPlugin
         }
 
         throw new NotSupportedException($"PostgreSQL plugin: Operation '{operation}' is not supported.");
+    }
+
+    private void ThrowIfReflection()
+    {
+        if (_reflectionGuard.IsCalledViaReflection())
+            throw new InvalidOperationException(Resources.ReflectionBasedAccessIsNotAllowed);
+    }
+
+    private void ThrowIfNotInitialized()
+    {
+        if (!_isInitialized)
+            throw new InvalidOperationException($"Plugin '{Metadata.Name}' v{Metadata.Version} is not initialized.");
     }
 
     private async Task ExecuteNonQueryAsync(InputParameter parameters, CancellationToken cancellationToken)

@@ -32,6 +32,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="FlowSynx.Plugins.PostgreSql.UnitTests" />
+	</ItemGroup>
+	
+	<ItemGroup>
 		<None Update="flowsynx.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
