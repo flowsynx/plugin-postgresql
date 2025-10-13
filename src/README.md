@@ -19,15 +19,16 @@ The PostgreSQL Plugin allows FlowSynx users to:
 
 ## Supported Operations
 
-- **query**: Executes a SQL SELECT query and returns the result set as JSON.
-- **execute**: Executes a SQL command (INSERT, UPDATE, DELETE, etc.) and returns the number of affected rows.
+- **query**: Executes a SQL SELECT query and returns the result set as structured data.
+- **execute**: Executes a SQL command (INSERT, UPDATE, DELETE, etc.) and returns the number of affected rows (as log output).
 
 ---
 
 ## Plugin Specifications
 
 The plugin requires the following configuration:
-- ConnectionString (string): **Required.** The PostgreSQL connection string used to connect to the database. Example:
+- `ConnectionString` (string): **Required.** The PostgreSQL connection string used to connect to the database. Example:
+
 ```
 Host=localhost;Port=5432;Username=postgres;Password=secret;Database=mydb
 ```
@@ -36,11 +37,12 @@ Host=localhost;Port=5432;Username=postgres;Password=secret;Database=mydb
 
 ## Input Parameters
 
-The plugin accepts the following parameters:
+The plugin accepts the following parameters (as per the `InputParameter` model):
 
-- `Operation` (string): **Required.** The type of operation to perform. Supported values are query and execute.  
-- `Sql ` (string): **Required.** The SQL query or command to execute. Use parameter placeholders (e.g., @id, @name) for dynamic values.  
+- `Operation` (string): **Required.** The type of operation to perform. Supported values are `query` and `execute`.
+- `Sql` (string): **Required.** The SQL query or command to execute. Use parameter placeholders (e.g., `@id`, `@name`) for dynamic values.
 - `Params` (object): Optional. A dictionary of parameter names and values to be used in the SQL template.
+- `Data` (object): Optional. Used for structured data operations (e.g., bulk/structured inserts or updates).
 
 ### Example input
 
@@ -48,7 +50,7 @@ The plugin accepts the following parameters:
 {
   "Operation": "query",
   "Sql": "SELECT id, name, email FROM users WHERE country = @country",
-  "Parameters": {
+  "Params": {
     "country": "Norway"
   }
 }
@@ -58,10 +60,11 @@ The plugin accepts the following parameters:
 
 ## Debugging Tips
 
-- Ensure the ConnectionString is correct and the database is accessible from the FlowSynx environment.
-- Use parameter placeholders (@parameterName) in the SQL to prevent SQL injection and enable parameterization.
-- Validate that all required parameters are provided in the Parameters dictionary.
-- If a query returns no results, verify that your SQL WHERE conditions are correct and the target table contains matching data. 
+- Ensure the `ConnectionString` is correct and the database is accessible from the FlowSynx environment.
+- Use parameter placeholders (`@parameterName`) in the SQL to prevent SQL injection and enable parameterization.
+- Validate that all required parameters are provided in the `Params` dictionary.
+- If a query returns no results, verify that your SQL `WHERE` conditions are correct and the target table contains matching data.
+- For structured data operations, ensure the `Data` property is set to a valid object or collection as expected by the operation.
 
 ---
 
