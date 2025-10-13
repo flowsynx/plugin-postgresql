@@ -151,14 +151,17 @@ public class PostgreSqlPlugin : IPlugin
     {
         int totalAffected = 0;
 
-        foreach (var row in context.StructuredData)
+        if (context.StructuredData is not null)
         {
-            await using var cmd = new NpgsqlCommand(sql, connection);
-            AddParameters(cmd, row);
-            totalAffected += await cmd.ExecuteNonQueryAsync(token);
+            foreach (var row in context.StructuredData)
+            {
+                await using var cmd = new NpgsqlCommand(sql, connection);
+                AddParameters(cmd, row);
+                totalAffected += await cmd.ExecuteNonQueryAsync(token);
+            }
         }
 
-        _logger?.LogInfo($"Executed structured SQL for {context.StructuredData.Count} rows. Total affected: {totalAffected}");
+        _logger?.LogInfo($"Executed structured SQL for {context.StructuredData?.Count} rows. Total affected: {totalAffected}");
     }
 
     private async Task ExecuteSingleNonQueryAsync(
